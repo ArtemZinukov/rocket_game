@@ -19,20 +19,26 @@ def load_rocket():
     return rocket_frames
 
 
-async def blink(canvas, row, column, symbol='*'):
+async def go_to_sleep(seconds):
+    iteration_count = int(seconds * 10)
+    for _ in range(iteration_count):
+        await asyncio.sleep(0)
+
+
+async def blink(canvas, row, column, offset_tics, symbol='*'):
+    initial_delay = random.uniform(0, 2)
+    await go_to_sleep(initial_delay)
+
     while True:
-        canvas.addstr(row, column, symbol, curses.A_DIM)
-        for i in range(random.randint(1, 25)):
-            await asyncio.sleep(0)
-        canvas.addstr(row, column, symbol)
-        for i in range(random.randint(1, 5)):
-            await asyncio.sleep(0)
-        canvas.addstr(row, column, symbol, curses.A_BOLD)
-        for i in range(random.randint(1, 6)):
-            await asyncio.sleep(0)
-        canvas.addstr(row, column, symbol)
-        for i in range(random.randint(1, 5)):
-            await asyncio.sleep(0)
+        for i in range(offset_tics):
+            canvas.addstr(row, column, symbol, curses.A_DIM)
+            await go_to_sleep(2)
+            canvas.addstr(row, column, symbol)
+            await go_to_sleep(0.3)
+            canvas.addstr(row, column, symbol, curses.A_BOLD)
+            await go_to_sleep(0.5)
+            canvas.addstr(row, column, symbol)
+            await go_to_sleep(0.3)
 
 
 async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):
@@ -103,6 +109,7 @@ def draw(canvas):
     coroutines = [
         blink(canvas, random.randint(1, rows - BOARD_SIZE),
               random.randint(1, columns - BOARD_SIZE),
+              random.randint(1, 25),
               random.choice(list(STARTS_SIMBOLS))) for _ in range(STARS_COUNT)
     ]
 
