@@ -72,6 +72,7 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
 
 async def animate_spaceship(canvas, row, column, frames):
     while True:
+        controls = read_controls(canvas)
         for frame in frames:
             row, column = get_rocket_position(canvas, row, column, controls, frame)
             draw_frame(canvas, row, column, frame)
@@ -99,12 +100,12 @@ def get_frame_size(frame):
 
 
 def draw(canvas):
-    global controls
     rocket_frames = load_rocket()
     curses.curs_set(False)
     canvas.border()
     canvas.nodelay(True)
     rows, columns = canvas.getmaxyx()
+
     coroutines = [
         blink(canvas, random.randint(1, rows - BOARD_SIZE),
               random.randint(1, columns - BOARD_SIZE),
@@ -120,7 +121,6 @@ def draw(canvas):
     coroutines.append(fire(canvas, rows / 2, columns / 2))
 
     while True:
-        controls = read_controls(canvas)
         for coroutine in coroutines.copy():
             try:
                 coroutine.send(None)
