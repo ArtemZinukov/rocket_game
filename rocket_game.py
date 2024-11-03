@@ -70,7 +70,8 @@ async def animate_spaceship(canvas, row, column, frames):
         for frame in frames:
             row, column = get_rocket_position(canvas, row, column, controls, frame)
             draw_frame(canvas, row, column, frame)
-            await asyncio.sleep(0)
+            for i in range(2):
+                await asyncio.sleep(0)
             draw_frame(canvas, row, column, frame, negative=True)
 
 
