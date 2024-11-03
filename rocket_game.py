@@ -26,8 +26,7 @@ async def go_to_sleep(seconds):
 
 
 async def blink(canvas, row, column, offset_tics, symbol='*'):
-    initial_delay = random.uniform(0, 2)
-    await go_to_sleep(initial_delay)
+    await go_to_sleep(offset_tics)
 
     while True:
         for i in range(offset_tics):
