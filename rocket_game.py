@@ -8,6 +8,7 @@ from curses_tools import draw_frame, read_controls
 TIC_TIMEOUT = 0.1
 STARS_COUNT = 100
 STARTS_SIMBOLS = '+*.:'
+BOARD_SIZE = 2
 
 
 def load_rocket():
@@ -56,7 +57,7 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
 
     curses.beep()
 
-    while 2 < row < max_row and 2 < column < max_column:
+    while BOARD_SIZE < row < max_row and BOARD_SIZE < column < max_column:
         canvas.addstr(round(row), round(column), symbol)
         await asyncio.sleep(0)
         canvas.addstr(round(row), round(column), ' ')
@@ -75,12 +76,12 @@ async def animate_spaceship(canvas, row, column, frames):
 
 def get_rocket_position(canvas, current_row, current_column, controls, frame):
     rows, columns = canvas.getmaxyx()
-    max_row, max_column = rows - 2, columns - 2
+    max_row, max_column = rows - BOARD_SIZE, columns - BOARD_SIZE
     frame_rows, frame_columns = get_frame_size(frame)
     controls_row, controls_column, _ = controls
     row, column = current_row + controls_row, current_column + controls_column
-    row = max(2, min(row, max_row - frame_rows))
-    column = max(2, min(column, max_column - frame_columns))
+    row = max(BOARD_SIZE, min(row, max_row - frame_rows))
+    column = max(BOARD_SIZE, min(column, max_column - frame_columns))
     return row, column
 
 
@@ -99,8 +100,8 @@ def draw(canvas):
     canvas.nodelay(True)
     rows, columns = canvas.getmaxyx()
     coroutines = [
-        blink(canvas, random.randint(1, rows - 2),
-              random.randint(1, columns - 2),
+        blink(canvas, random.randint(1, rows - BOARD_SIZE),
+              random.randint(1, columns - BOARD_SIZE),
               random.choice(list(STARTS_SIMBOLS))) for _ in range(STARS_COUNT)
     ]
 
