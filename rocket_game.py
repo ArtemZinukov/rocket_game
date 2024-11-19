@@ -1,5 +1,6 @@
 import asyncio
 import curses
+import itertools
 import random
 import time
 
@@ -71,14 +72,17 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
 
 
 async def animate_spaceship(canvas, row, column, frames):
-    while True:
-        controls = read_controls(canvas)
-        for frame in frames:
-            for _ in range(2):
-                row, column = get_rocket_position(canvas, row, column, controls, frame)
-                draw_frame(canvas, row, column, frame)
-                await asyncio.sleep(0)
-                draw_frame(canvas, row, column, frame, negative=True)
+    double_ship_images = list(itertools.chain.from_iterable([[frame] * 2 for frame in frames]))
+    cycle_images = itertools.cycle(double_ship_images)
+
+    for ship_image in cycle_images:
+        control = read_controls(canvas)
+        row, column = get_rocket_position(canvas, row, column, control, ship_image)
+        draw_frame(canvas, row, column, ship_image)
+        control = read_controls(canvas)
+        row, column = get_rocket_position(canvas, row, column, control, ship_image)
+        draw_frame(canvas, row, column, ship_image, negative=True)
+        await asyncio.sleep(0)
 
 
 def get_rocket_position(canvas, current_row, current_column, controls, frame):
